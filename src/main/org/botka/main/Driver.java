@@ -25,7 +25,7 @@ public class Driver {
 
 	private final static int MAX_LENGTH = 35;
 	
-	private volatile static int lengthA = 0;
+	
 	public volatile static int count = 0;
 	
 	public static long timeStart = System.currentTimeMillis();
@@ -65,116 +65,55 @@ public class Driver {
 			ishash = true;
 
 		}
-
+		final long characterCount = chars.length;
 		String password = "";
-		int[] arr = new int[MAX_LENGTH];
-		for (int i = 0; i < arr.length; i++) {
-			arr[i] = 0;
-		}
-
-		int indexIncrease = 0;
 		
+		int indexIncrease = 0;
+		int currentLength = 1;
 		while (true) {
-
-			if (arr[indexIncrease] < MAX_LENGTH) {
-				if (lengthA < 2) {
-					lengthA = 1;
-				}
-				arr[indexIncrease] += 1;
-			} else {
-				arr[indexIncrease] = 0;
-				if (arr[indexIncrease + 1] < MAX_LENGTH) {
-
-					if (lengthA < 3) {
-						lengthA = 2;
+			int[] arr = new int[currentLength];
+			for (int z = 0; z < currentLength; z++) {
+				arr[z] = 0;
+			}
+			for (int i =currentLength; i > 0; i--) {
+				int pointer = currentLength - 1;
+				while(true) {
+					password = generatePassword(chars, currentLength,arr);
+					if (password != null) {
+						if (evaluatePassword(password, hash)) {
+							return password;
+						}
 					}
-					arr[indexIncrease + 1] += 1;
-				} else {
-					arr[indexIncrease + 1] = 0;
-					if (arr[indexIncrease + 2] < MAX_LENGTH) {
-						if (lengthA < 4) {
-							lengthA = 3;
-						}
-						arr[indexIncrease + 2] += 1;
-					} else {
-						if (lengthA < 5) {
-							lengthA = 4;
-						}
-						arr[indexIncrease + 2] = 0;
-						if (arr[indexIncrease + 3] < MAX_LENGTH) {
-							arr[indexIncrease + 3] += 1;
+					if (i == 1 && completedLength(arr, chars) == true) {
+						break;
+					}
+					while (true) {
+						arr[pointer] += 1;
+						int charIndex = arr[pointer];
+						if (charIndex >= characterCount) {
+							arr[pointer] = 0;
+							pointer--;
 						} else {
-							if (lengthA < 6) {
-								lengthA = 5;
-							}
-							arr[indexIncrease + 3] = 0;
-							if (arr[indexIncrease + 4] < MAX_LENGTH) {
-								arr[indexIncrease + 4] += 1;
-							} else {
-								arr[indexIncrease + 4] = 0;
-								if (arr[indexIncrease + 5] < MAX_LENGTH) {
-									lengthA = 6;
-									arr[indexIncrease + 5] += 1;
-								} else {
-									arr[indexIncrease + 5] = 0;
-									if (arr[indexIncrease + 6] < MAX_LENGTH) {
-										lengthA = 7;
-										arr[indexIncrease + 6] += 1;
-									} else {
-										arr[indexIncrease + 6] = 0;
-										if (arr[indexIncrease + 7] < MAX_LENGTH) {
-											lengthA = 8;
-											arr[indexIncrease + 7] += 1;
-										} else {
-											arr[indexIncrease + 7] = 0;
-											if (arr[indexIncrease + 8] < MAX_LENGTH) {
-												lengthA = 9;
-												arr[indexIncrease + 8] += 1;
-											} else {
-												arr[indexIncrease + 8] = 0;
-												if (arr[indexIncrease + 9] < MAX_LENGTH) {
-													lengthA = 10;
-													arr[indexIncrease + 9] += 1;
-												} else {
-													break;
-												}
-											}
-										}
-									}
-								}
-							}
+							arr[pointer] = charIndex;
+							break;
 						}
 					}
+					pointer = currentLength - 1;
+						
 				}
+				
 			}
-
-			/*
-			 * if (serverCount < 100) { Thread t = new Thread(new Runnable() {
-			 * 
-			 * @Override public void run() { xx(chars,arr); serverCount--;
-			 * 
-			 * 
-			 * }
-			 * 
-			 * }); t.start(); serverCount++; }
-			 */
-
-			password = generatePassword(chars, arr);
-			if (password != null) {
-				if (evaluatePassword(password, hash)) {
-					break;
-				}
-			}
-			
-			
+			currentLength++;
 		}
-		password = "";
-		return password;
+		
+		//implement timeout
 	}
 
-	public static String generatePassword(char[] chars, int[] arr) {
-		String password = "";
-		for (int i = 0; i < lengthA; i++) {
+	
+	public static String generatePassword(char[] chars, int currentLength, int[] arr) {
+		
+		String password = ""; 
+		for (int i = 0; i < currentLength; i++) {
 			password += chars[arr[i]];
 		}
 		count++;
@@ -196,15 +135,15 @@ public class Driver {
 		String thePassword = test;
 		try {
 			if (ishash) {
-				if (toHexString(getSHA(test)).equals(hash)) {
+				if (Hash.toHexString(Hash.getSHA(test)).equals(hash)) {
 					System.out.println(
-							"\nPassword Found : " + thePassword + "\nUsing this hash: " + toHexString(getSHA(test)));
+							"\nPassword Found : " + thePassword + "\nUsing this hash: " + Hash.toHexString(Hash.getSHA(test)));
 					return true;
 				}
 			} else {
 				if (test.equals(hash)) {
 					System.out.println("\nPassword Found : " + test);
-					System.out.println(toHexString(getSHA(test)));
+					System.out.println(Hash.toHexString(Hash.getSHA(test)));
 					return true;
 				}
 			}
@@ -215,27 +154,10 @@ public class Driver {
 		return false;
 	}
 
-	public static byte[] getSHA(String bs) throws NoSuchAlgorithmException {
-		
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-		
-		return md.digest(bs.getBytes(StandardCharsets.UTF_8));
-	}
-
-	public static String toHexString(byte[] hash) {
-		// Convert byte array into signum representation
-		BigInteger number = new BigInteger(1, hash);
-
-		// Convert message digest into hex value
-		StringBuilder hexString = new StringBuilder(number.toString(16));
-
-		// Pad with leading zeros
-		while (hexString.length() < 32) {
-			hexString.insert(0, '0');
-		}
-
-		return hexString.toString();
+	
+	
+	public static boolean completedLength(int[] arr, char[] chars) {
+		return arr != null && chars != null ? arr[0] == chars.length - 1 : false;
 	}
 
 	public static void safePrintln(String s) {

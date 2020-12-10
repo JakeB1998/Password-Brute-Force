@@ -1,14 +1,13 @@
 /*
- * File name:  PasswordCrackDriver.java
+ * File name:  Driver.java
  *
  * Programmer : Jake Botka
- * ULID: JMBOTKA
  *
  * Date: Mar 5, 2020
  *
- * Out Of Class Personal Program
+ * 
  */
-package Botka.Jake;
+package main.org.botka.main;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -17,55 +16,58 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 /**
- * <insert class description here>
+ * Main Driver for program.
  *
  * @author Jake Botka
  *
  */
-public class PasswordCrackDriver {
+public class Driver {
 
-	private static String password = "Avsf";
-	private final static int MAX = 35;
+	private final static int MAX_LENGTH = 35;
+	
 	private volatile static int lengthA = 0;
-
-	public volatile static boolean breakif = false;
-
-	public static long timeStart = System.currentTimeMillis();
-
-	private static int serverCount = 0;
-
-	private static boolean ishash = false;
-
 	public volatile static int count = 0;
+	
+	public static long timeStart = System.currentTimeMillis();
+	private static boolean ishash = false;
+	
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		char[] alpha;
-		String z = "abcdefghijklmnopqrstuvwxyz0123456789";
+		String hash = "";
+		if (args != null && args.length > 0) {
+			//hande
+			System.out.println("has args");
+		}
+		else {
+			System.out.println("Enter Hash or password:");
+			Scanner scan = new Scanner(System.in);
+			hash = scan.nextLine();
+			scan.close();
+		}
+		char[] alpha = null;
+		String z = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 		alpha = z.toCharArray();
-		crack(alpha);
+		crack(alpha, hash);
 
 	}
 
-	public static String crack(char[] chars) {
+	/**
+	 * Cracks password
+	 * @param chars
+	 * @return
+	 */
+	public static String crack(char[] chars, String hash) {
 
-		System.out.println("Enter Hash or password:");
-		Scanner scan = new Scanner(System.in);
-		password = scan.nextLine();
-
-		if (password.getBytes().length == 64) {
+		if (hash.getBytes().length == 64) {
 			ishash = true;
 
 		}
 
-		// password = password.trim();
-
 		String password = "";
-
-		int[] arr = new int[10];
-
+		int[] arr = new int[MAX_LENGTH];
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = 0;
 		}
@@ -74,14 +76,14 @@ public class PasswordCrackDriver {
 		
 		while (true) {
 
-			if (arr[indexIncrease] < MAX) {
+			if (arr[indexIncrease] < MAX_LENGTH) {
 				if (lengthA < 2) {
 					lengthA = 1;
 				}
 				arr[indexIncrease] += 1;
 			} else {
 				arr[indexIncrease] = 0;
-				if (arr[indexIncrease + 1] < MAX) {
+				if (arr[indexIncrease + 1] < MAX_LENGTH) {
 
 					if (lengthA < 3) {
 						lengthA = 2;
@@ -89,7 +91,7 @@ public class PasswordCrackDriver {
 					arr[indexIncrease + 1] += 1;
 				} else {
 					arr[indexIncrease + 1] = 0;
-					if (arr[indexIncrease + 2] < MAX) {
+					if (arr[indexIncrease + 2] < MAX_LENGTH) {
 						if (lengthA < 4) {
 							lengthA = 3;
 						}
@@ -99,38 +101,38 @@ public class PasswordCrackDriver {
 							lengthA = 4;
 						}
 						arr[indexIncrease + 2] = 0;
-						if (arr[indexIncrease + 3] < MAX) {
+						if (arr[indexIncrease + 3] < MAX_LENGTH) {
 							arr[indexIncrease + 3] += 1;
 						} else {
 							if (lengthA < 6) {
 								lengthA = 5;
 							}
 							arr[indexIncrease + 3] = 0;
-							if (arr[indexIncrease + 4] < MAX) {
+							if (arr[indexIncrease + 4] < MAX_LENGTH) {
 								arr[indexIncrease + 4] += 1;
 							} else {
 								arr[indexIncrease + 4] = 0;
-								if (arr[indexIncrease + 5] < MAX) {
+								if (arr[indexIncrease + 5] < MAX_LENGTH) {
 									lengthA = 6;
 									arr[indexIncrease + 5] += 1;
 								} else {
 									arr[indexIncrease + 5] = 0;
-									if (arr[indexIncrease + 6] < MAX) {
+									if (arr[indexIncrease + 6] < MAX_LENGTH) {
 										lengthA = 7;
 										arr[indexIncrease + 6] += 1;
 									} else {
 										arr[indexIncrease + 6] = 0;
-										if (arr[indexIncrease + 7] < MAX) {
+										if (arr[indexIncrease + 7] < MAX_LENGTH) {
 											lengthA = 8;
 											arr[indexIncrease + 7] += 1;
 										} else {
 											arr[indexIncrease + 7] = 0;
-											if (arr[indexIncrease + 8] < MAX) {
+											if (arr[indexIncrease + 8] < MAX_LENGTH) {
 												lengthA = 9;
 												arr[indexIncrease + 8] += 1;
 											} else {
 												arr[indexIncrease + 8] = 0;
-												if (arr[indexIncrease + 9] < MAX) {
+												if (arr[indexIncrease + 9] < MAX_LENGTH) {
 													lengthA = 10;
 													arr[indexIncrease + 9] += 1;
 												} else {
@@ -157,44 +159,50 @@ public class PasswordCrackDriver {
 			 * }); t.start(); serverCount++; }
 			 */
 
-			xx(chars, arr);
-
-			// xx(chars,arr);
-
-			if (breakif) {
-				break;
+			password = generatePassword(chars, arr);
+			if (password != null) {
+				if (evaluatePassword(password, hash)) {
+					break;
+				}
 			}
+			
+			
 		}
 		password = "";
 		return password;
 	}
 
-	public static void xx(char[] chars, int[] arr) {
+	public static String generatePassword(char[] chars, int[] arr) {
 		String password = "";
 		for (int i = 0; i < lengthA; i++) {
 			password += chars[arr[i]];
 		}
 		count++;
 		System.out.println(password + "\tCount : " + count);
-
-		if (test(password)) {
+		return password;
+	}
+	
+	public static boolean evaluatePassword(String pwd, String hash) {
+		if (testPassword(pwd, hash)) {
 			long timeEnd = System.currentTimeMillis() - timeStart;
 			safePrintln("Seconds : " + Double.toString((double) timeEnd / 1000));
-			breakif = true;
+		
+			return true;
 		}
+		return false;
 	}
 
-	public static boolean test(String test) {
+	public static boolean testPassword(String test, String hash) {
 		String thePassword = test;
 		try {
 			if (ishash) {
-				if (toHexString(getSHA(test)).equals(password)) {
+				if (toHexString(getSHA(test)).equals(hash)) {
 					System.out.println(
 							"\nPassword Found : " + thePassword + "\nUsing this hash: " + toHexString(getSHA(test)));
 					return true;
 				}
 			} else {
-				if (test.equals(password)) {
+				if (test.equals(hash)) {
 					System.out.println("\nPassword Found : " + test);
 					System.out.println(toHexString(getSHA(test)));
 					return true;

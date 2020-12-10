@@ -55,7 +55,7 @@ public class Driver {
 	}
 
 	/**
-	 * Cracks password
+	 * Cracks password.
 	 * @param chars
 	 * @return
 	 */

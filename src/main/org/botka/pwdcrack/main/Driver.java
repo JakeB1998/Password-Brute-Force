@@ -48,6 +48,13 @@ public class Driver {
 			Scanner scan = new Scanner(System.in);
 			hash = scan.nextLine();
 			scan.close();
+			if (hash.getBytes().length == 64) {
+				try {
+					hash = Hash.toHexString(Hash.getSHA(hash));
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		if (hash.length() > 0) {
@@ -87,6 +94,7 @@ public class Driver {
 			this.HASH = hash;
 			this.LENGTH = length;
 		}
+		
 		/**
 		 * 
 		 * 
@@ -102,13 +110,8 @@ public class Driver {
 		 */
 		public static String crack(char[] chars, String hash, short length) {
 			boolean failFlag = false;
-			if (hash.getBytes().length == 64) {
-				try {
-					hash = Hash.toHexString(Hash.getSHA(hash));
-				} catch (NoSuchAlgorithmException e) {
-					failFlag = true;
-					e.printStackTrace();
-				}
+			if (hash == null) {
+				failFlag = true;
 			}
 			if (!failFlag) {
 				final long characterCount = chars.length;

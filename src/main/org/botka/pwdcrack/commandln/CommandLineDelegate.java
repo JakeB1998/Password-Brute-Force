@@ -10,24 +10,28 @@ package main.org.botka.pwdcrack.commandln;
  * @author Jake Botka
  *
  */
-public final class CommandLineDelegate {
+public  class CommandLineDelegate {
 
+	private final CommandExecutionMap mCommandExecutionMap;
+	
 	/**
 	 * 
 	 */
 	private CommandLineDelegate() {
-		// TODO Auto-generated constructor stub
+		this.mCommandExecutionMap = new CommandExecutionMap(0);
 	}
 	
-	public static void handleCommand(String command) {
+	public  void handleCommand(String command) {
 		
 	}
 	
-	
-	public static void handleCommandLine(String commandLine) {
+	public  void handleCommandLine(String commandLine) {
 		
 	}
 	
+	public void handleHashType(String hashTypeCommand) {
+		
+	}
 	
 
 }

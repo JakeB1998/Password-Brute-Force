@@ -4,12 +4,12 @@
  * Date Created: Dec 10, 2020
  *
  */
-package main.org.botka.main;
+package main.org.botka.pwdcrack;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import main.org.botka.exceptions.FilePermissionsException;
+import main.org.botka.pwdcrack.exceptions.FilePermissionsException;
 
 /**
  * @author Jake Botka

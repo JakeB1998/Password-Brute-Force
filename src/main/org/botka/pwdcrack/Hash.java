@@ -4,7 +4,7 @@
  * Date Created: Dec 10, 2020
  *
  */
-package main.org.botka.main;
+package main.org.botka.pwdcrack;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -17,9 +17,10 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Hash {
 
-	private static final String[] SUPPORTED_HASHES = {};
+	private static final String[] SUPPORTED_HASHES = {"SHA-256", "SHA-1", "MD5"};
 
 	private String mHash;
+	private String mHashFunction;
 
 	/**
 	 * 
@@ -62,6 +63,12 @@ public class Hash {
 		this.mHash = hash;
 	}
 
+	public boolean isHash() {
+		return false;
+	}
+	public boolean isHash(String hash, String hashFunction) {
+		return false;
+	}
 	public boolean isHashSupported() {
 		return this.isHashSupported(this.mHash);
 	}

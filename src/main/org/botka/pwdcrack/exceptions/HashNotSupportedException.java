@@ -4,7 +4,7 @@
  * Date Created: Dec 10, 2020
  *
  */
-package main.org.botka.exceptions;
+package main.org.botka.pwdcrack.exceptions;
 
 /**
  * @author Jake Botka

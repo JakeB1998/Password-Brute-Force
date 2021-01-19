@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import main.org.botka.pwdcrack.Hash;
 import main.org.botka.pwdcrack.Util;
+import main.org.botka.utility.api.logger.Logger;
 
 /**
  * Main Driver for program.
@@ -28,7 +29,8 @@ import main.org.botka.pwdcrack.Util;
 public class Driver {
 
 	private final static int MAX_LENGTH = 35;
-
+	private final static StringBuilder stringBuilder = new StringBuilder("");
+	public static boolean logging = true;
 	public volatile static long count = 0;
 	public static long timeStart = System.currentTimeMillis();
 	public static volatile boolean stop = false;
@@ -39,9 +41,11 @@ public class Driver {
 	public static void main(String[] args) {
 		String hash = "";
 		if (args != null && args.length > 0) {
-			System.out.println("args:\n");
-			for (String s : args) {
-				System.out.println("\n" + s);
+			if (logging) {
+				System.out.println("args:\n");
+				for (String s : args) {
+					System.out.println("\n" + s);
+				}
 			}
 		} else {
 			System.out.println("Enter Hash or password:");
@@ -103,6 +107,7 @@ public class Driver {
 		public void run() {
 			crack(SUPPORTED_CHARS,HASH,LENGTH);
 		}
+		
 		/**
 		 * Cracks password.
 		 * 
@@ -125,10 +130,12 @@ public class Driver {
 					int pointer = length - 1;
 					boolean skip = false;
 					while (true) {
-						password = generatePassword(chars, length, arr);
+						password = generatePassword(stringBuilder,chars, length, arr);
 						if (password != null) {
 							if (evaluatePassword(password, hash)) {
-								//System.out.println("Found password: " + password);
+								if (logging) {
+									Driver.safePrintln(("Found password: " + password));
+								}
 								return password;
 							}
 						}
@@ -157,15 +164,11 @@ public class Driver {
 					if (skip) {
 						break;
 					}
-					
-					
 				}
 			}
 			return null;
 			// implement timeout
-		}
-
-		
+		}	
 	}
 
 	/**
@@ -177,14 +180,16 @@ public class Driver {
 	 * @param arr           Indexes to the char array to generate password.
 	 * @return Generated password.
 	 */
-	public static String generatePassword(char[] chars, int currentLength, int[] arr) {
-		String password = "";
+	public static String generatePassword(StringBuilder stringBuilder, char[] chars, int currentLength, int[] arr) {
+		stringBuilder.delete(0, stringBuilder.length());
 		for (int i = 0; i < currentLength; i++) {
-			password += chars[arr[i]];
+			 stringBuilder.append(chars[arr[i]]);
 		}
 		count++;
-		//Driver.safePrintln(password + "\tCount : " + count);
-		return password;
+		if (logging) {
+			Driver.safePrintln(stringBuilder.toString() + "\tCount : " + count);
+		}
+		return stringBuilder.toString();
 	}
 
 	/**
@@ -254,7 +259,8 @@ public class Driver {
 	 */
 	public static void safePrintln(String s) {
 		synchronized (System.out) {
-			System.out.println(s);
+			Logger.Console.log(Driver.class, s, true);
+			
 		}
 	}
 

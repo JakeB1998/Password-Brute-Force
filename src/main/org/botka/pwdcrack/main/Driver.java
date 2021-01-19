@@ -10,6 +10,7 @@
 package main.org.botka.pwdcrack.main;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -63,8 +64,7 @@ public class Driver {
 
 		if (hash.length() > 0) {
 			char[] alpha = null;
-			String z = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-			alpha = z.toCharArray();
+			alpha = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()".toCharArray();
 			short length = 1;
 			String result = null;
 			while (result == null) {
